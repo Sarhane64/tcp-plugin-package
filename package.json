@@ -1,6 +1,6 @@
 {
   "name": "capacitor-socket-tcp",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Socket communication tcp with capacitor",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",

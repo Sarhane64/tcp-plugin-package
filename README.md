@@ -16,7 +16,8 @@ npx cap sync
 * [`connect(...)`](#connect)
 * [`send(...)`](#send)
 * [`close()`](#close)
-* [`listen()`](#listen)
+* [`addListener('dataReceived', ...)`](#addlistenerdatareceived-)
+* [Interfaces](#interfaces)
 
 </docgen-index>
 
@@ -29,9 +30,11 @@ npx cap sync
 connect(options: { host: string; port: number; }) => Promise<void>
 ```
 
-| Param         | Type                                         |
-| ------------- | -------------------------------------------- |
-| **`options`** | <code>{ host: string; port: number; }</code> |
+Établit une connexion avec un serveur TCP
+
+| Param         | Type                                         | Description                           |
+| ------------- | -------------------------------------------- | ------------------------------------- |
+| **`options`** | <code>{ host: string; port: number; }</code> | Contient l'hôte et le port du serveur |
 
 --------------------
 
@@ -42,9 +45,11 @@ connect(options: { host: string; port: number; }) => Promise<void>
 send(options: { message: string; }) => Promise<void>
 ```
 
-| Param         | Type                              |
-| ------------- | --------------------------------- |
-| **`options`** | <code>{ message: string; }</code> |
+Envoie un message au serveur
+
+| Param         | Type                              | Description                   |
+| ------------- | --------------------------------- | ----------------------------- |
+| **`options`** | <code>{ message: string; }</code> | Contient le message à envoyer |
 
 --------------------
 
@@ -55,15 +60,36 @@ send(options: { message: string; }) => Promise<void>
 close() => Promise<void>
 ```
 
+Ferme la connexion au serveur
+
 --------------------
 
 
-### listen()
+### addListener('dataReceived', ...)
 
 ```typescript
-listen() => Promise<void>
+addListener(eventName: 'dataReceived', listenerFunc: (data: { message: string; }) => void) => Promise<PluginListenerHandle>
 ```
 
+Événement déclenché lorsqu'un message est reçu
+
+| Param              | Type                                                 |
+| ------------------ | ---------------------------------------------------- |
+| **`eventName`**    | <code>'dataReceived'</code>                          |
+| **`listenerFunc`** | <code>(data: { message: string; }) =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
 --------------------
+
+
+### Interfaces
+
+
+#### PluginListenerHandle
+
+| Prop         | Type                                      |
+| ------------ | ----------------------------------------- |
+| **`remove`** | <code>() =&gt; Promise&lt;void&gt;</code> |
 
 </docgen-api>

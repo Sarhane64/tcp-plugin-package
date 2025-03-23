@@ -23,46 +23,27 @@ public class TcpSocketPluginPlugin extends Plugin {
         try {
             socket = new Socket(host, port);
             outputStream = socket.getOutputStream();
+            inputStream = socket.getInputStream();
+
+            // Démarrer le thread d'écoute immédiatement après la connexion
+            startListening();
+
             call.resolve();
         } catch (Exception e) {
             call.reject("Failed to connect", e);
         }
     }
 
-    @PluginMethod
-    public void send(PluginCall call) {
-        String message = call.getString("message");
-
-        try {
-            if (outputStream != null && inputStream != null) {
-                outputStream.write(message.getBytes(StandardCharsets.UTF_8));
-                outputStream.flush();
-
-                listen(call);
-
-                call.resolve();
-            } else {
-                call.reject("OutputStream or InputStream is null");
-            }
-        } catch (Exception e) {
-            call.reject("Failed to send message", e);
-        }
-    }
-
-    @PluginMethod
-    public void listen(PluginCall call) {
-        if (inputStream == null) {
-            call.reject("Socket is not connected");
-            return;
-        }
-
+    // Nouvelle méthode pour démarrer l'écoute dans un thread séparé
+    private void startListening() {
         new Thread(() -> {
             try {
                 byte[] buffer = new byte[1024];
                 int bytesRead;
 
-                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                while (socket != null && !socket.isClosed() && (bytesRead = inputStream.read(buffer)) != -1) {
                     String receivedMessage = new String(buffer, 0, bytesRead, StandardCharsets.UTF_8);
+                    Log.i("TcpSocketPlugin", "Message reçu: " + receivedMessage);
 
                     JSObject ret = new JSObject();
                     ret.put("message", receivedMessage);
@@ -73,6 +54,23 @@ public class TcpSocketPluginPlugin extends Plugin {
                 Log.e("TcpSocketPlugin", "Error while listening", e);
             }
         }).start();
+    }
+
+    @PluginMethod
+    public void send(PluginCall call) {
+        String message = call.getString("message");
+
+        try {
+            if (outputStream != null) {
+                outputStream.write(message.getBytes(StandardCharsets.UTF_8));
+                outputStream.flush();
+                call.resolve();
+            } else {
+                call.reject("OutputStream is null");
+            }
+        } catch (Exception e) {
+            call.reject("Failed to send message", e);
+        }
     }
 
     @PluginMethod
