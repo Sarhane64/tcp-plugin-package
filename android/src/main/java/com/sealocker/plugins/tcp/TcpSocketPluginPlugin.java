@@ -13,6 +13,7 @@ public class TcpSocketPluginPlugin extends Plugin {
     private TcpSocketPlugin implementation = new TcpSocketPlugin();
     private Socket socket = null;
     private OutputStream outputStream = null;
+    private InputStream inputStream = null;
 
     @PluginMethod
     public void connect(PluginCall call) {

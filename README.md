@@ -16,6 +16,7 @@ npx cap sync
 * [`connect(...)`](#connect)
 * [`send(...)`](#send)
 * [`close()`](#close)
+* [`listen()`](#listen)
 
 </docgen-index>
 
@@ -52,6 +53,15 @@ send(options: { message: string; }) => Promise<void>
 
 ```typescript
 close() => Promise<void>
+```
+
+--------------------
+
+
+### listen()
+
+```typescript
+listen() => Promise<void>
 ```
 
 --------------------
