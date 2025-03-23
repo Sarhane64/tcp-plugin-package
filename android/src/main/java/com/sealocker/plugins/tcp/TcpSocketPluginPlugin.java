@@ -2,6 +2,7 @@ package com.sealocker.plugins.tcp;
 
 import android.util.Log;
 import java.io.OutputStream;
+import java.io.InputStream;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import com.getcapacitor.*;
@@ -32,14 +33,45 @@ public class TcpSocketPluginPlugin extends Plugin {
         String message = call.getString("message");
 
         try {
-            if (outputStream != null) {
+            if (outputStream != null && inputStream != null) {
                 outputStream.write(message.getBytes(StandardCharsets.UTF_8));
                 outputStream.flush();
+
+                listen(call);
+
+                call.resolve();
+            } else {
+                call.reject("OutputStream or InputStream is null");
             }
-            call.resolve();
         } catch (Exception e) {
             call.reject("Failed to send message", e);
         }
+    }
+
+    @PluginMethod
+    public void listen(PluginCall call) {
+        if (inputStream == null) {
+            call.reject("Socket is not connected");
+            return;
+        }
+
+        new Thread(() -> {
+            try {
+                byte[] buffer = new byte[1024];
+                int bytesRead;
+
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    String receivedMessage = new String(buffer, 0, bytesRead, StandardCharsets.UTF_8);
+
+                    JSObject ret = new JSObject();
+                    ret.put("message", receivedMessage);
+
+                    notifyListeners("dataReceived", ret);
+                }
+            } catch (Exception e) {
+                Log.e("TcpSocketPlugin", "Error while listening", e);
+            }
+        }).start();
     }
 
     @PluginMethod
@@ -53,4 +85,5 @@ public class TcpSocketPluginPlugin extends Plugin {
             call.reject("Failed to close socket", e);
         }
     }
+
 }

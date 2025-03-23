@@ -1,5 +1,4 @@
 import { WebPlugin } from '@capacitor/core';
-
 import type { TcpSocketPluginPlugin } from './definitions';
 
 export class TcpSocketPluginWeb extends WebPlugin implements TcpSocketPluginPlugin {
@@ -13,5 +12,10 @@ export class TcpSocketPluginWeb extends WebPlugin implements TcpSocketPluginPlug
 
   async close(): Promise<void> {
     console.log('Web does not support closing TCP connection');
+  }
+
+  // Méthode d'écoute (ne fonctionne pas dans le web mais peut être implémentée ici)
+  async listen(): Promise<void> {
+    console.log('Web does not support listening to TCP messages');
   }
 }
